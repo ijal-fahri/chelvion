@@ -219,7 +219,7 @@
                             @foreach ($cabangs as $cabang)
                                 <option value="{{ $cabang->id }}"
                                     {{ old('shipping_cabang_id') == $cabang->id ? 'selected' : '' }}>
-                                    {{ $cabang->nama_cabang }} - {{ $cabang->kota }}
+                                    {{ $cabang->nama_cabang }} - {{ $cabang->alamat }}
                                 </option>
                             @endforeach
                         </select>
@@ -276,7 +276,7 @@
                             @foreach ($cabangs as $cabang)
                                 <option value="{{ $cabang->id }}"
                                     {{ old('pickup_cabang_id') == $cabang->id ? 'selected' : '' }}>
-                                    {{ $cabang->nama_cabang }} - {{ $cabang->kota }}
+                                    {{ $cabang->nama_cabang }} - {{ $cabang->alamat }}
                                 </option>
                             @endforeach
                         </select>
@@ -657,10 +657,18 @@
                     // 3. Update UI
                     if (voucherName) voucherName.textContent = selectedVoucher.code;
                     if (voucherDesc) voucherDesc.textContent = selectedVoucher.description;
-                    const expiryDate = new Date(selectedVoucher.expiry_date);
                     if (voucherExpiry) {
-                        voucherExpiry.textContent =
-                            `Berlaku hingga ${expiryDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+                        // Kita gunakan 'expiry_date_formatted' dari accessor Voucher.php
+                        // Isinya akan "Berlaku selamanya" ATAU "22 Oktober 2025"
+
+                        // Cek apakah accessor mengembalikan string "Berlaku selamanya"
+                        if (selectedVoucher.expiry_date_formatted === 'Berlaku selamanya') {
+                            voucherExpiry.textContent = selectedVoucher.expiry_date_formatted;
+                        } else {
+                            // Jika tidak, baru tambahkan prefix "Berlaku hingga "
+                            voucherExpiry.textContent =
+                                `Berlaku hingga ${selectedVoucher.expiry_date_formatted}`;
+                        }
                     }
 
                     if (voucherApplied) voucherApplied.classList.remove('hidden');
